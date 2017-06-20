@@ -1,54 +1,56 @@
 import React from 'react';
 
-import { Container, Header, Title,Text, Content, Footer, FooterTab, Button, Left, Right, Body, Icon } from 'native-base';
+import Expo from 'expo';
+import CounterStore from './counterStore.js';
+import { observer } from 'mobx-react';
+import { Container, Content, Text, Card, Header, Body, Button, Title, CardItem } from 'native-base';
+import { View } from 'react-native';
 
-
+@observer
 export default class App extends React.Component {
+
+  constructor() {
+    super();
+    this.state = {
+      isReady: false
+    }
+  }
+  async componentWillMount() {
+    await Expo.Font.loadAsync({
+      'Roboto': require('native-base/Fonts/Roboto.ttf'),
+      'Roboto_medium': require('native-base/Fonts/Roboto_medium.ttf'),
+    });
+    this.setState({
+      isReady: true
+    });
+  }
+
+
   render() {
+    if (!this.state.isReady) {
+      return <Text>Light</Text>;
+    }
     return (
       <Container>
         <Header>
-          <Left>
-            <Button transparent>
-              <Icon name='menu' />
-            </Button>
-          </Left>
           <Body>
-            <Title>Header</Title>
+            <Title>Mobx Counter</Title>
           </Body>
-          <Right />
         </Header>
-        <Content>
-            <Button light block>
-                        <Text>Light</Text>
-                    </Button>
-                    <Button block>
-                        <Text>Primary</Text>
-                    </Button>
-                    <Button block success>
-                        <Text>Success</Text>
-                    </Button>
-                    <Button block info>
-                        <Text>Info</Text>
-                    </Button>
-                    <Button block warning>
-                        <Text>Warning</Text>
-                    </Button>
-                    <Button block danger>
-                        <Text>Danger</Text>
-                    </Button>
-                    <Button dark block>
-                        <Text>Dark</Text>
-                    </Button>
-        </Content>
-        <Footer>
-            <FooterTab>
-                <Button full>
-                    <Text>Footer</Text>
-                </Button>
-            </FooterTab>
-        </Footer>
+        <Button primary block onPress={ () => CounterStore.increment() }>
+          <Text>Increment</Text>
+        </Button>
+        <Button primary block onPress={ () => CounterStore.decrement() }>
+          <Text>Decrement</Text>
+        </Button>
+        <Card>
+          <CardItem>
+            <Text>
+              { CounterStore.counter }
+            </Text>
+          </CardItem>
+        </Card>
       </Container>
-    );
+      );
   }
 }
